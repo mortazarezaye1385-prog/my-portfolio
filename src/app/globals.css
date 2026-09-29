@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Colour system
+   Warm charcoal + "ember" vermilion. Every neutral is tinted toward the
+   accent hue (38) so surfaces and text feel like one family.
+   Light mode is its own palette (paper + ink), not an inversion.
+------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  --bg: oklch(0.165 0.006 45);
+  --bg-raised: oklch(0.2 0.008 45);
+  --bg-sunken: oklch(0.135 0.005 45);
+  --fg: oklch(0.95 0.008 75);
+  --fg-muted: oklch(0.72 0.01 60);
+  --fg-subtle: oklch(0.56 0.01 55);
+  --line: oklch(0.27 0.007 45);
+  --line-strong: oklch(0.37 0.01 45);
+  --accent: oklch(0.7 0.165 38);
+  --accent-hover: oklch(0.76 0.15 40);
+  --accent-ink: oklch(0.18 0.03 38);
+  --accent-wash: oklch(0.7 0.165 38 / 0.14);
+  --danger: oklch(0.72 0.16 25);
+  --success: oklch(0.78 0.13 150);
+  --overlay: oklch(0.12 0.006 45 / 0.62);
+  --noise-opacity: 0.045;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: oklch(0.965 0.008 80);
+  --bg-raised: oklch(0.985 0.005 80);
+  --bg-sunken: oklch(0.93 0.011 75);
+  --fg: oklch(0.21 0.012 45);
+  --fg-muted: oklch(0.44 0.012 50);
+  --fg-subtle: oklch(0.57 0.011 55);
+  --line: oklch(0.87 0.011 70);
+  --line-strong: oklch(0.77 0.013 60);
+  --accent: oklch(0.56 0.175 36);
+  --accent-hover: oklch(0.5 0.17 36);
+  --accent-ink: oklch(0.985 0.008 80);
+  --accent-wash: oklch(0.56 0.175 36 / 0.1);
+  --danger: oklch(0.52 0.18 27);
+  --success: oklch(0.5 0.12 150);
+  --overlay: oklch(0.2 0.012 45 / 0.5);
+  --noise-opacity: 0.035;
+  color-scheme: light;
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-raised: var(--bg-raised);
+  --color-sunken: var(--bg-sunken);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-subtle: var(--fg-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-custom: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    letter-spacing: 0.005em;
+    font-optical-sizing: auto;
+  }
+
+  [data-theme="dark"] body {
+    font-weight: 380;
+  }
+
+  /* Fine film grain over everything; purely decorative. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  img {
+    user-select: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Type roles. Five sizes, big jumps between them.
+------------------------------------------------------------------- */
+@utility container-x {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 450;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+@utility meta {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility display-1 {
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 720;
+  font-size: clamp(2.3rem, 9.2vw, 9.25rem);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+@utility display-2 {
+  font-family: var(--font-display);
+  font-stretch: 108%;
+  font-weight: 680;
+  font-size: clamp(2.5rem, 6.4vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+@utility display-3 {
+  font-family: var(--font-display);
+  font-stretch: 104%;
+  font-weight: 620;
+  font-size: clamp(1.625rem, 2.6vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+@utility lead {
+  font-size: clamp(1.1875rem, 1.6vw, 1.4375rem);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+
+/* ------------------------------------------------------------------
+   Motion helpers
+------------------------------------------------------------------- */
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-travel {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: -0.12;
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  45% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+@layer components {
+  .pulse-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--accent);
+    animation: pulse-ring 2.4s var(--ease-out-expo) infinite;
+  }
+}
+
+/* Theme switch: circular reveal from the toggle via the View Transitions API. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
